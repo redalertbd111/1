@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emergency Chat Room</title>
+    <style>
+        body { font-family: "Courier New", monospace; background-color: #f4f4f4; padding: 5px; margin: 0; }
+        .header { background: #075e54; color: white; padding: 10px; text-align: center; font-weight: bold; position: sticky; top: 0; }
+        .write-btn { background: #25d366; color: white; padding: 12px; text-decoration: none; display: block; text-align: center; font-weight: bold; border-radius: 5px; margin: 10px 5px; border: 1px solid #000; }
+        .chat-area { background: white; border: 1px solid #ddd; padding: 5px; min-height: 200px; }
+        .msg-item { border-bottom: 1px dashed #ccc; padding: 8px 5px; margin-bottom: 5px; }
+        .name { color: #075e54; font-weight: bold; text-transform: uppercase; font-size: 14px; }
+        .text { color: #333; font-size: 16px; display: block; margin-top: 3px; }
+        .footer { text-align: center; padding: 10px; font-size: 12px; color: #777; }
+    </style>
+</head>
+<body>
+
+    <div class="header">চ্যাট বোর্ড (Live)</div>
+
+    <a href="আপনার_গুগল_ফর্মের_লিঙ্ক" class="write-btn">✉ মেসেজ লিখুন (নতুন)</a>
+
+    <div class="chat-area" id="chat-list">
+        মেসেজ লোড হচ্ছে... অনুগ্রহ করে অপেক্ষা করুন।
+    </div>
+
+    <div class="footer">
+        <button onclick="location.reload()" style="padding: 10px; width: 80%;">রিফ্রেশ করুন (Refresh)</button>
+        <p>নতুন মেসেজ দেখতে রিফ্রেশ করুন</p>
+    </div>
+
+    <script>
+        // আপনার ফায়ারবেস ডাটাবেস লিঙ্ক
+        const firebaseUrl = "https://telegram-ec35d-default-rtdb.firebaseio.com/chats/global.json";
+
+        function getMessages() {
+            var request = new XMLHttpRequest();
+            request.open("GET", firebaseUrl, true);
+            request.onreadystatechange = function () {
+                if (request.readyState === 4 && request.status === 200) {
+                    var data = JSON.parse(request.responseText);
+                    var chatHtml = "";
+                    
+                    // মেসেজগুলো উল্টো করে সাজানো (নতুন মেসেজ সবার উপরে থাকবে)
+                    var keys = Object.keys(data).reverse();
+                    
+                    for (var i = 0; i < keys.length; i++) {
+                        var k = keys[i];
+                        chatHtml += "<div class='msg-item'>" +
+                                    "<span class='name'>" + data[k].sender + ":</span>" +
+                                    "<span class='text'>" + data[k].message + "</span>" +
+                                    "</div>";
+                    }
+                    document.getElementById('chat-list').innerHTML = chatHtml;
+                }
+            };
+            request.send();
+        }
+
+        // পেজ ওপেন হলেই মেসেজ দেখাবে
+        getMessages();
+    </script>
+
+</body>
+</html>
