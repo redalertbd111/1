@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Java Phone Chat</title>
+</head>
+<body>
+    <h3>Emergency Chat (Java Fix)</h3>
+    <hr>
+    
+    <a href="https://telegram-ec35d-default-rtdb.firebaseio.com/.json" target="_blank">সব মেসেজ দেখুন (See Messages)</a>
+    <hr>
+
+    <form action="https://telegram-ec35d-default-rtdb.firebaseio.com/messages.json" method="POST">
+        আপনার নাম:<br>
+        <input type="text" name="sender" required><br>
+        মেসেজ:<br>
+        <textarea name="message" required></textarea><br><br>
+        <input type="submit" value="পাঠান (Send Message)">
+    </form>
+
+    <p style="font-size: 10px; color: gray;">নোট: মেসেজ পাঠানোর পর 'OK' বা 'Back' বাটনে ক্লিক করুন।</p>
+</body>
+</html>
