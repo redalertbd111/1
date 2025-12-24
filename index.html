@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat For All</title>
+    <style>
+        body { font-family: monospace; background: #eee; padding: 5px; }
+        .msg { background: white; border-bottom: 1px solid #ccc; padding: 3px; margin-bottom: 5px; font-size: 12px; }
+        input { width: 90%; }
+    </style>
+</head>
+<body>
+    <b>Emergency Messenger (Java Support)</b>
+    <hr>
+    
+    <div id="display">লোডিং...</div>
+    <hr>
+
+    <input type="text" id="user" placeholder="আপনার নাম"><br>
+    <input type="text" id="friend" placeholder="বন্ধুর নাম"><br>
+    <textarea id="text" placeholder="মেসেজ লিখুন..."></textarea><br>
+    <button onclick="send()">পাঠান (Send)</button>
+    <br><br>
+    <button onclick="location.reload()">রিফ্রেশ (Refresh)</button>
+
+    <script>
+        // সরাসরি ফায়ারবেস এপিআই কল
+        const dbUrl = "https://telegram-ec35d-default-rtdb.firebaseio.com/chats/";
+
+        function send() {
+            const u = document.getElementById('user').value;
+            const f = document.getElementById('friend').value;
+            const t = document.getElementById('text').value;
+            if(!u || !f || !t) return;
+
+            const path = u < f ? u+"_"+f : f+"_"+u;
+            const url = dbUrl + path + ".json";
+            
+            // fetch এর বদলে XMLHttpRequest ব্যবহার করছি যা পুরনো ব্রাউজারে ভালো কাজ করে
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", url, true);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    alert("মেসেজ গেছে!");
+                    document.getElementById('text').value = "";
+                    load();
+                }
+            };
+            xhr.send(JSON.stringify({sender: u, message: t}));
+        }
+
+        function load() {
+            const u = document.getElementById('user').value;
+            const f = document.getElementById('friend').value;
+            if(!u || !f) return;
+            const path = u < f ? u+"_"+f : f+"_"+u;
+
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", dbUrl + path + ".json", true);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    const data = JSON.parse(xhr.responseText);
+                    let html = "";
+                    for(let id in data) {
+                        html += "<div class='msg'><b>"+data[id].sender+":</b> "+data[id].message+"</div>";
+                    }
+                    document.getElementById('display').innerHTML = html;
+                }
+            };
+            xhr.send();
+        }
+    </script>
+</body>
+</html>
